@@ -35,7 +35,7 @@ class Client
 
 	private string $next = '';
 
-	private $sessionCallback = null;
+	private $sessionCallback = 'cc_session_helper';
 
 	private \GuzzleHttp\HandlerStack $guzzleHandler;
     private string                   $clientAPIKey;

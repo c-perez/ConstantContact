@@ -15,8 +15,9 @@ class Client
 	public string $accessToken = '';
 
 	public string $refreshToken = '';
+    public bool   $PKCE         = true;
 
-	private string $oauth2URL = 'https://authz.constantcontact.com/oauth2/default/v1/token';
+    private string $oauth2URL = 'https://authz.constantcontact.com/oauth2/default/v1/token';
 
 	private string $authorizeURL = 'https://authz.constantcontact.com/oauth2/default/v1/authorize';
 
@@ -37,15 +38,22 @@ class Client
 	private $sessionCallback = null;
 
 	private \GuzzleHttp\HandlerStack $guzzleHandler;
+    private string                   $clientAPIKey;
+    private string                   $clientSecret;
+    private string                   $redirectURI;
 
-	/**
+    /**
 	 * Construct a client.
 	 *
 	 * By default, all scopes are enabled.  You can remove any, or set new ones.
 	 */
-	public function __construct(private string $clientAPIKey, private string $clientSecret, private string $redirectURI, public bool $PKCE = true)
+	public function __construct(string $clientAPIKey, string $clientSecret, string $redirectURI, bool $PKCE = true)
 		{
-		// default to all scopes
+            $this->PKCE         = $PKCE;
+            $this->redirectURI  = $redirectURI;
+            $this->clientSecret = $clientSecret;
+            $this->clientAPIKey = $clientAPIKey;
+            // default to all scopes
 		$this->scopes = \array_flip($this->validScopes);
 		$this->host = $_SERVER['HTTP_HOST'] ?? '';
 		$this->guzzleHandler = \GuzzleHttp\HandlerStack::create();
@@ -377,7 +385,7 @@ class Client
 		return [];
 		}
 
-	private function exec(\CurlHandle $ch) : bool
+	private function exec($ch) : bool
 		{
 		\curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
@@ -409,7 +417,7 @@ class Client
 		return false;
 		}
 
-	private function setAuthorization(\CurlHandle $ch) : void
+	private function setAuthorization($ch) : void
 		{
 		// Set authorization header
 		// Make string of "API_KEY:SECRET"

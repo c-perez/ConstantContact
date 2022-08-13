@@ -31,7 +31,7 @@ class Client
 
 	private array $scopes = [];
 
-	private array $validScopes = ['account_read', 'contact_data', 'offline_access'];
+	private array $validScopes = ['account_read', 'contact_data', 'campaign_data', 'offline_access'];
 
 	private string $next = '';
 
